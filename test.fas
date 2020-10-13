@@ -1,0 +1,41 @@
+i ju main
+
+: ok
+i @pju pword
+c ok\n
+
+: main
+i @pca pstring
+r tstring
+i @pca pstring
+r tstring2
+i ca ok
+i xx
+
+: pword
+i aapu@pa!
+d 0
+: pwloop
+i ifduot@ppu
+r pwend
+d 7
+i 2/unju pwloop
+: pwend
+i poa!;;
+
+: pstring
+i aapua!@+pu
+: pstringloop
+i @+ca pword
+i nxpoa!;;
+r pstringloop
+
+: tstring
+d 3
+c hell
+c o\swo
+c rld!
+c \n
+
+: tstring2
+s "hello to\sthe\tworld!\n"
