@@ -1,0 +1,328 @@
+i ju main
+
+: ok
+i @pju pword
+c ok\n
+
+: pword
+i aapu@pa!
+d 0
+: pwloop
+i ifduot@ppu
+r pwend
+d 7
+i 2/unju pwloop
+: pwend
+i drpoa!;;
+
+: pstring
+i aapua!@+pu
+: pstringloop
+i @+ca pword
+i nxpoa!;;
+r pstringloop
+
+: radix
+d -10
+
+: swap
+i ovpuovororpo
+i ;;
+
+: rswap
+i popopoovpuov
+i ororpupu;;
+
+: /mod
+i ca ./modin
+i ovoror
+i du@panpu@ppu
+x ffff
+d 15
+i 2/un@panpo;;
+x ffff
+
+: ./modin
+i @p@ppupu
+d 14
+d 15
+i 2*un
+i ovpuovor
+i orpo
+: ./modlp
+i ovov++-idr2*
+r ./modthen
+i nx;;
+r ./modlp
+: ./modthen
+i ovoror--2*--
+i nx;;
+r ./modlp
+
+: 256*
+i 2*2*2*
+: 32*
+i 2*2*2*2*2*;;
+
+: 256/
+i 2/2/2/
+: 32/
+i 2/2/2/2/2/;;
+
+: dec
+i @p++;;
+d -1
+
+: inc
+i @p++;;
+d 1
+
+d 0
+d 0
+d 0
+: numpad
+d 0
+
+: itoa
+i @ppu
+r numpad
+: itoaloop
+i duduorpu
+i ca itoa+
+i ifca itoa+
+r itoa;;
+i ifca itoa+
+r itoa;;
+i ifca itoa+
+r itoa;;
+i ifpopodupua!
+r itoa;;
+i !!nx
+r itoaloop
+: itoa;;
+i drpopodupua!
+i !!poca dec
+i dupu
+i --@p++podupu
+r numpad
+i a!!!po
+i ;;
+
+: itoa+
+i ca rswap
+i @pa!@@ca /mod
+r radix
+i ovpuovororpo
+i ca numchar
+i poca 256*
+i ++puca rswap
+i ;;
+
+: numchar
+i @p++du@p++
+d 48
+d -58
+i -idr;;
+r numchar;;
+: numchar;;
+i dr@p++;;
+d 39
+
+: nl
+i @p@pa!ot;;
+c \n
+d 0
+
+: echo
+i @ppu@pa!
+d 10
+d 0
+i inotun;;
+
+: dbg
+i aapu@pa!indr
+d 3
+i poa!;;
+
+: peek
+i duca itoa
+i ju pstring
+
+d 0
+: wpad
+d 0
+d 0
+d 0
+d 0
+d 0
+
+: EOL
+d 0
+
+: ok?
+i @pa!@@--ifdr
+r EOL
+r .ok?
+i ;;
+: .ok?
+i drca ok
+i @p!!;;
+d 0
+
+: white
+i indu@p++-i
+d -33
+r .white
+i drdu@porif
+d 10
+r .white
+i drdrju white
+: .white
+i dr;;
+
+: wrotate
+i duduorpu
+: .wrotateloop
+i du@panpoca 256*
+x ff
+i ++puca 256/
+i ifju .wrotateloop
+r .wrotate;;
+: .wrotate;;
+i drpo;;
+
+: word+
+i ca 256*
+i indupu++po;;
+
+: wtest
+i du@porifdr@p
+d 10
+r .nltest
+d -33
+i ++--;;
+: .nltest
+i @pa!@p!!dr@p
+r EOL
+d -1
+d -33
+i ++--;;
+
+: word
+i @p--pu@pa!
+r wpad
+d 0
+i ca white
+i ju .wordloop2
+: .wordloop1
+i @pdua!
+d 0
+i ca word+
+i ca wtest
+i -idr
+r .word;;
+: .wordloop2
+i ca word+
+i ca wtest
+i -idrca word+
+r .word;;
+i ca wtest
+i -idrca word+
+r .word;;
+i ca wtest
+i -idrca wrotate
+r .word;;
+i podupu--a!!!
+i nx
+r .wordloop1
+: .word;;
+i drca 256/
+i ca wrotate
+i podupu--a!!!
+i @pdupo++--pu
+r wpad
+i @p++dua!po!!
+d -1
+i ;;
+
+: atoi+
+i ca rswap
+i du@pan@p++du
+x ff
+d -48
+i @p++---idr@p
+d -10
+r .atoi+
+d -39
+i ++ju .atoi+;;
+: .atoi+
+i dr
+: .atoi+;;
+i poaa@pa!@@--
+r radix
+i @p++pua!po**
+d 1
+i ++puca rswap
+i ju 256/
+
+: atoi
+i a!@+pu@p
+d 0
+: .atoiloop
+i pu@+
+i ca atoi+
+i ifca atoi+
+r .atoi;;
+i ifca atoi+
+r .atoi;;
+i ifca atoi+
+r .atoi;;
+i ifponxju .atoi;;nx
+r .atoi;;
+r .atoiloop
+: .atoi;;
+i drpopodr;;
+: .atoi;;nx
+i drpo;;
+
+
+: main
+i ca word
+i ca ok?
+i ca atoi
+i ca word
+i ca ok?
+i ca atoi
+i ++ca itoa
+i ca pstring
+i @pca wrotate
+c abcd
+i ca pword
+i @pca itoa
+d 85
+i ca pstring
+i ca nl
+i @pca pstring
+r tstring
+i @pca pstring
+r tstring2
+i ca ok
+i xx
+
+: tstring
+d 3
+c hell
+c o\swo
+c rld!
+c \n
+
+: tstring2
+s "hello to\sthe\tworld!\n"
+
+: forth
++ 160
+
+: macro
++ 160
+
+: end

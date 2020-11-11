@@ -1,41 +1,32 @@
-i ju main
-
-: ok
-i @pju pword
-c ok\n
-
 : main
-i @pca pstring
-r tstring
-i @pca pstring
-r tstring2
-i ca ok
+i @p@p
+d 85
+d -10
+i ca /mod
 i xx
 
-: pword
-i aapu@pa!
-d 0
-: pwloop
-i ifduot@ppu
-r pwend
-d 7
-i 2/unju pwloop
-: pwend
-i poa!;;
+: /mod
+i ca ./modin
+i ovoror
+i du@panpu@ppu
+x ffff
+d 15
+i 2/un@panpo;;
+x ffff
 
-: pstring
-i aapua!@+pu
-: pstringloop
-i @+ca pword
-i nxpoa!;;
-r pstringloop
-
-: tstring
-d 3
-c hell
-c o\swo
-c rld!
-c \n
-
-: tstring2
-s "hello to\sthe\tworld!\n"
+: ./modin
+i @p@ppupu
+d 14
+d 15
+i 2*un
+i ovpuovor
+i orpo
+: ./modlp
+i ovov++-idr2*
+r ./modthen
+i nx;;
+r ./modlp
+: ./modthen
+i ovoror--2*--
+i nx;;
+r ./modlp

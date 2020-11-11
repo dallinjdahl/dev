@@ -7,7 +7,6 @@ uint8_t rp = 0;
 
 uint32_t disk[1024<<8] = {0};
 
-#include "io.h"
 
 uint32_t a = 0;
 uint32_t ip = 0;
@@ -17,10 +16,28 @@ uint8_t slot = 0;
 uint16_t breakout[6] = {0};
 
 #include "dbg.h"
+#include "io.h"
 
 #define ADDR(i) (word >> (((i)+1)*5))
+#define TOS data[(dp-1)&0x1f]
+#define NOS data[(dp-2)&0x1f]
+#define PUSH(x) data[dp&0x1f] = (x);dp++
+#define POP() TOS;dp--
+
+#define TORS rstack[(rp-1)&0x1f]
+#define NORS rstack[(rp-2)&0x1f]
+#define RPUSH(x) rstack[rp&0x1f] = (x);rp++
+#define RPOP() TORS;rp--
+
 void vm_init() {
 	io_init();
+}
+
+void memdump(uint32_t addr, uint32_t len) {
+	for(uint8_t i = 0; i < len; i++) {
+		printf("%016x ", disk[addr+i]);
+	}
+	printf("\n");
 }
 
 void fetch() {
@@ -39,8 +56,9 @@ void decode() {
 
 void execute() {
 	uint32_t w;
+//printf("w[%x]: %x %x %x %x %x %X\n", word, breakout[0], breakout[1], breakout[2], breakout[3], breakout[4], breakout[5]);
 	while(slot < 6) {
-//printf("ip[%d]sl[%d]op[%d]ts[%d]\n", ip-1, slot, breakout[slot], data[dp&0x1f]);
+//printf("ip[%d]sl[%d]op[%x]ts[%d][%d %d %d]rs[%d][%d %d %d %d]a[%d]\n", ip-1, slot, breakout[slot], dp, data[(dp-1)&0x1f], data[(dp-2)&0x1f], data[(dp-3)&0x1f], rp, rstack[(rp-1)&0x1f], rstack[(rp-2)&0x1f], rstack[(rp-3)&0x1f], rstack[(rp-4)&0x1f], a);
 		switch(breakout[slot]) {
 		case 0x00:
 			slot++;
@@ -48,8 +66,8 @@ void execute() {
 		case 0x01:
 			slot = 6;
 			w = ip;
-			ip = rstack[rp];
-			rstack[rp] = w;
+			ip = TORS;
+			TORS = w;
 			break;
 		case 0x02:
 //printf("ju[%d]w[%x]sh[%d]\n",ADDR(slot), word, (((slot)+1)*5));
@@ -58,13 +76,13 @@ void execute() {
 			break;
 		case 0x03:
 //printf("ca[%d]w[%x]sh[%d]\n",ADDR(slot), word, (((slot)+1)*5));
-			rstack[(++rp)&0x1f] = ip;
+			RPUSH(ip);
 			ip = ADDR(slot);
 			slot = 6;
 			break;
 		case 0x04:
-			if(rstack[rp&0x1f]) {
-				rstack[rp&0x1f]--;
+			if(TORS) {
+				TORS--;
 				slot = 0;
 				break;
 			}
@@ -72,8 +90,8 @@ void execute() {
 			rp--;
 			break;
 		case 0x05:
-			if(rstack[rp&0x1f]) {
-				rstack[rp&0x1f]--;
+			if(TORS) {
+				TORS--;
 				ip = disk[ip];
 				slot = 6;
 				break;
@@ -84,7 +102,7 @@ void execute() {
 			break;
 		case 0x06:
 //printf("rs[%d]ds[%x]\n", rstack[rp&0x1f], data[dp&0x1f]);
-			if(!data[dp&0x1f]) {
+			if(!TOS) {
 				ip = disk[ip];
 				slot = 6;
 				break;
@@ -93,7 +111,7 @@ void execute() {
 			ip++;
 			break;
 		case 0x07:
-			if(data[dp&0x1f] >= 0) {
+			if((int32_t)(TOS) >= 0) {
 				ip = disk[ip];
 				slot = 6;
 				break;
@@ -102,67 +120,64 @@ void execute() {
 			ip++;
 			break;
 		case 0x08:
-			data[(++dp)&0x1f] = disk[ip++];
+			PUSH(disk[ip++]);
 			slot++;
 			break;
 		case 0x09:
-			data[(++dp)&0x1f] = disk[a++];
+			PUSH(disk[a++]);
 			slot++;
 			break;
 		case 0x0a:
-			data[(++dp)&0x1f] = disk[a];
+			PUSH(disk[a]);
 			slot++;
 			break;
 		case 0x0b:
-			disk[ip++] = data[(dp--)&0x1f];
+			disk[ip++] = POP();
 			slot++;
 			break;
 		case 0x0c:
-			disk[a++] = data[(dp--)&0x1f];
+			disk[a++] = POP();
 			slot++;
 			break;
 		case 0x0d:
-			disk[a] = data[(dp--)&0x1f];
+			disk[a] = POP();
 			slot++;
 			break;
 		case 0x0e:
-			data[(++dp)&0x1f] = io_in[a]();
+			PUSH(io_in[a]());
 			slot++;
 			break;
 		case 0x0f:
-			io_out[a](data[(dp--)&0x1f]);
+			io_out[a](TOS);
+			dp--;
 			slot++;
 			break;
 		case 0x10:
-			data[(dp-1)&0x1f] *= data[dp&0x1f];
-			dp--;
+			NOS *= POP();
 			slot++;
 			break;
 		case 0x11:
-			data[dp&0x1f] <<= 1;
+			TOS <<= 1;
 			slot++;
 			break;
 		case 0x12:
-			data[dp&0x1f] = ((int32_t)data[dp&0x1f]) >> 1;
+			TOS = (int32_t)(TOS) >> 1;
 			slot++;
 			break;
 		case 0x13:
-			data[dp&0x1f] = ~data[dp&0x1f];
+			TOS = ~TOS;
 			slot++;
 			break;
 		case 0x14:
-			data[(dp-1)&0x1f] += data[dp&0x1f];
-			dp--;
+			NOS += POP();
 			slot++;
 			break;
 		case 0x15:
-			data[(dp-1)&0x1f] &= data[dp&0x1f];
-			dp--;
+			NOS &= POP();
 			slot++;
 			break;
 		case 0x16:
-			data[(dp-1)&0x1f] ^= data[dp&0x1f];
-			dp--;
+			NOS ^= POP();
 			slot++;
 			break;
 		case 0x17:
@@ -170,36 +185,38 @@ void execute() {
 			slot++;
 			break;
 		case 0x18:
-			data[(dp+1)&0x1f] = data[dp&0x1f];
-			dp++;
+			PUSH(TOS);
 			slot++;
 			break;
 		case 0x19:
-			data[(++dp)&0x1f] = rstack[(rp--)&0x1f];
+			PUSH(TORS);
+			rp--;
 			slot++;
 			break;
 		case 0x1a:
-			data[(dp+1)&0x1f] = data[(dp-1)&0x1f];
-			dp++;
+			PUSH(NOS);
 			slot++;
 			break;
 		case 0x1b:
-			data[(++dp)&0x1f] = a;
+			PUSH(a);
 			slot++;
 			break;
 		case 0x1c:
-			ip=rstack[(rp--)&0x1f];
+			ip=RPOP();
 			slot = 6;
 			break;
 		case 0x1d:
-			rstack[(++rp)&0x1f] = data[(dp--)&0x1f];
+			RPUSH(TOS);
+			dp--;
 			slot++;
 			break;
 		case 0x1e:
+//dmpstack();
+//memdump(39, 3);
 			io_exit();
 			exit(0);
 		case 0x1f:
-			a = data[(dp--)&0x1f];
+			a = POP();
 			slot++;
 			break;
 		}

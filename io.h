@@ -1,4 +1,4 @@
-#define IONUM 3
+#define IONUM 4
  
 uint32_t io_mem[IONUM] = {0};
 
@@ -53,5 +53,10 @@ uint32_t disk_in() {
 	return res;
 }
 
-uint32_t (*io_in[IONUM])()= {console_in, block_in, disk_addr_in};
+uint32_t dbgstack() {
+	dmpstack();
+	return dp;
+}
+
+uint32_t (*io_in[IONUM])()= {console_in, block_in, disk_addr_in, dbgstack};
 void (*io_out[IONUM])(uint32_t) = {console_out, block_out, disk_addr_out};
