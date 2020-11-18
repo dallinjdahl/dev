@@ -7,7 +7,7 @@ FILE *block_file;
 void io_init() {
 	block_file = fopen("block.img", "r+b");
 	fseek(block_file, 0, SEEK_SET);
-	fread(disk, 4, 256, block_file);
+	fread(disk, 255, 1024, block_file);
 	fflush(block_file);
 }
 

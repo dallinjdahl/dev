@@ -7,7 +7,6 @@ uint8_t rp = 0;
 
 uint32_t disk[1024<<8] = {0};
 
-
 uint32_t a = 0;
 uint32_t ip = 0;
 
@@ -75,7 +74,8 @@ void execute() {
 			slot = 6;
 			break;
 		case 0x03:
-//printf("ca[%d]w[%x]sh[%d]\n",ADDR(slot), word, (((slot)+1)*5));
+//printf("ca[%d:%d]w[%x:%x]sh[%d]\n",ip, ADDR(slot), word, disk[ADDR(slot)], (((slot)+1)*5));
+//memdump(ADDR(slot), 8);
 			RPUSH(ip);
 			ip = ADDR(slot);
 			slot = 6;

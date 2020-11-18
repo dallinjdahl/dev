@@ -285,8 +285,22 @@ i drpopodr;;
 : .atoi;;nx
 i drpo;;
 
+: logic
+i ifduor--;;
+r .logic
+: .logic
+i ;;
 
 : main
+i ca word
+i ca ok?
+i @pca streq
+r eqstr
+i ifdrdr
+r .main
+i ca pstring
+: .main
+i drdrdr
 i ca word
 i ca ok?
 i ca atoi
@@ -304,10 +318,13 @@ i ca pstring
 i ca nl
 i @pca pstring
 r tstring
-i @pca pstring
-r tstring2
 i ca ok
 i xx
+
+: eqstr
+d 1
+c hell
+c o
 
 : tstring
 d 3
@@ -316,13 +333,102 @@ c o\swo
 c rld!
 c \n
 
-: tstring2
-s "hello to\sthe\tworld!\n"
+: forths
+d 15
 
 : forth
-+ 160
+d 0
+c -:
+r colon
+d 0
+c pstr
+r pstring
+d 0
+c word
+r word
+d 0
+c atoi
+r atoi
+d 0
+c itoa
+r itoa
+d 0
+c o,
+r compop
+d 0
+c -]
+r comp
+d 1
+c fort
+c h
+r forthctxt
+d 1
+c macr
+c o
+r macroctxt
+d 0
+c find
+r find
++ 138
+
+: macros
+d 0
+c [
+r interp
+d 0
+c ;
+r cret
+d 0
+c ,m
+r postpone
 
 : macro
-+ 160
++ 161
+
+: here
+r end
+
+: slot
+d 0
+
+: ctxt
+r forth
+
+: sumlen
+i dua!@@dupu++
+i @p++po;;
+d 1
+
+: streq
+i ovovpupu
+i ca sumlen
+i a!popoaapu
+: .streqlp
+i pua!@+poaa
+i pua!@+orifdr
+r .streq
+i podrpoduor;;
+: .streq
+i drpoaanxdrdu
+r .streqlp
+i or--;;
+
+: find
+
+: colon
+
+: compop
+
+: comp
+
+: forthctxt
+
+: macroctxt
+
+: interp
+
+: cret
+
+: postpone
 
 : end
