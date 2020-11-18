@@ -1,3 +1,5 @@
+] put in a loop here to load in blocks so we don't have to load 255
+] blocks at startup
 i ju main
 
 : ok
@@ -220,7 +222,7 @@ d 0
 i ca word+
 i ca wtest
 i -idr
-r .word;;
+r .word-;;
 : .wordloop2
 i ca word+
 i ca wtest
@@ -243,6 +245,14 @@ i @pdupo++--pu
 r wpad
 i @p++dua!po!!
 d -1
+i ;;
+: .word-;;
+i drdrpo--@pdu
+r wpad
+i pu--++po@p++
+d -1
+i a!!!aa
+i ju dbg
 i ;;
 
 : atoi+
@@ -294,13 +304,9 @@ i ;;
 : main
 i ca word
 i ca ok?
-i @pca streq
-r eqstr
-i ifdrdr
-r .main
+i ca find
+i ca itoa
 i ca pstring
-: .main
-i drdrdr
 i ca word
 i ca ok?
 i ca atoi
@@ -333,8 +339,11 @@ c o\swo
 c rld!
 c \n
 
+] the assembler can't do arithmetic so we manually add the number of
+] occupied dictionary cells to the origin of the dictionary to go here.
+
 : forths
-d 15
+d 271
 
 : forth
 d 0
@@ -373,6 +382,9 @@ r find
 
 : macros
 d 0
+
+: macro
+d 0
 c [
 r interp
 d 0
@@ -381,8 +393,6 @@ r cret
 d 0
 c ,m
 r postpone
-
-: macro
 + 161
 
 : here
@@ -397,11 +407,13 @@ r forth
 : sumlen
 i dua!@@dupu++
 i @p++po;;
-d 1
+d 2
 
 : streq
 i ovovpupu
 i ca sumlen
+i @p++
+d 1
 i a!popoaapu
 : .streqlp
 i pua!@+poaa
@@ -414,6 +426,22 @@ r .streqlp
 i or--;;
 
 : find
+i @pa!@@@pa!@@
+r ctxt
+r forths
+i dupu
+: .findlp
+i drca streq
+i ifdrpudrpopo
+r .find
+i dr;;
+: .find
+i dr@p++du--po
+d 1
+i dupu++
+i -idrdr
+r .findlp
+i podrduor;;
 
 : colon
 
