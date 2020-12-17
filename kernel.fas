@@ -339,60 +339,106 @@ c o\swo
 c rld!
 c \n
 
-] the assembler can't do arithmetic so we manually add the number of
-] occupied dictionary cells to the origin of the dictionary to go here.
-
 : forths
-d 271
+r fthend
+r dfind
 
 : forth
+: dcolon
 d 0
 c -:
+d 0
 r colon
+
+: dpstring
 d 0
 c pstr
+r dcolon
 r pstring
+
+: dword
 d 0
 c word
+r dpstring
 r word
+
+: datoi
 d 0
 c atoi
+r dword
 r atoi
+
+: ditoa
 d 0
 c itoa
+r datoi
 r itoa
+
+: dcompop
 d 0
 c o,
+r ditoa
 r compop
+
+: dcomma
+d 0
+c ,
+r dcompop
+r comma
+
+: dcomp
 d 0
 c -]
+r dcomma
 r comp
+
+: dforthctxt
 d 1
 c fort
 c h
+r dcomp
 r forthctxt
+
+: dmacroctxt
 d 1
 c macr
 c o
+r dforthctxt
 r macroctxt
+
+: dfind
 d 0
 c find
+r dmacroctxt
 r find
+
+: fthend
 + 138
 
 : macros
-d 0
+r mcrend
+r dpostpone
 
 : macro
+: dinterp
 d 0
 c [
-r interp
 d 0
-c ;
+r interp
+
+: dcret
+d 0
+c -;
+r dinterp
 r cret
+
+: dpostpone
 d 0
 c ,m
+r dcret
 r postpone
+
+: mcrend
 + 161
 
 : here
@@ -401,8 +447,19 @@ r end
 : slot
 d 0
 
+: !ctxt
+i @pdr!p;;
 : ctxt
-r forth
+i @p;;
+r forths
+
+: head
+i ca ctxt
+i a!@+;;
+
+: link
+i ca head
+i dr@@;;
 
 : sumlen
 i dua!@@dupu++
@@ -426,36 +483,120 @@ r .streqlp
 i or--;;
 
 : find
-i @pa!@@@pa!@@
-r ctxt
-r forths
-i dupu
+i ca link
 : .findlp
-i drca streq
-i ifdrpudrpopo
+i ca dbg
+i ca streq
+i ca dbg
+i ifdr@p++pudr
 r .find
-i dr;;
-: .find
-i dr@p++du--po
 d 1
-i dupu++
-i -idrdr
-r .findlp
-i podrduor;;
+i poa!@@;;
+: .find
+i dra!@@if
+r .find;;
+i ju .findlp
+: .find;;
+i pudrpo;;
+
+: b!
+i @pdr!p;;
+: b
+i @p;;
+d 0
+
+: @b+
+i aapuca b
+i a!@+aaca b!
+i poa!;;
+
+: !b+
+i aapuca b
+i a!!+aaca b!
+i poa!;;
+
+: strcpy
+i ca b!
+i a!@+duca !b+
+i pu
+: .strcpy
+i @+ca !b+
+i nx;;
+r .strcpy
 
 : colon
+i ca word
+i ca head
+i dupuca strcpy
+i ca b
+i ca ctxt
+i a!!!
+i ca link
+i ca comma
+i poca ctxt
+i @p++a!!!;;
+d 1
+
+: !opbuf
+i @pdr!p;;
+: opbuf
+i @p;;
+d 0
+
+: opbuf+
+i ca opbuf
+i ++ju !opbuf
+
+: !opcnt
+i @pdr!p;;
+: opcnt
+i @p;;
+d 0
+
+: opcnt+
+i ca opcnt
+i @p++@porif
+d 1
+d 5
+r commit
+] implement commit
+i ju !opcnt
 
 : compop
+i ca opcnt
+i ifpu
+: .compoplp
+r .compop
+i 2*2*2*2*2*po
+i @p++ju .compoplp
+d -1
+: .compop
+i ca opbuf+
+i ju opcnt+
+
+: comma
+i @pa!@@dupua!
+r ctxt
+i @@a!!+aapoa!
+i !!;;
 
 : comp
+] rewrite find so that it can take a dictionary, enabling this
+
 
 : forthctxt
+i @pju !ctxt
+r forths
 
 : macroctxt
+i @pju !ctxt
+r macros
 
 : interp
 
 : cret
+i @pju compop
+x 1c
 
 : postpone
 

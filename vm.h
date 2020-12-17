@@ -211,8 +211,7 @@ void execute() {
 			slot++;
 			break;
 		case 0x1e:
-//dmpstack();
-//memdump(39, 3);
+printf("ip[%d]sl[%d]op[%x]ts[%d][%d %d %d]rs[%d][%d %d %d %d]a[%d]\n", ip-1, slot, breakout[slot], dp, data[(dp-1)&0x1f], data[(dp-2)&0x1f], data[(dp-3)&0x1f], rp, rstack[(rp-1)&0x1f], rstack[(rp-2)&0x1f], rstack[(rp-3)&0x1f], rstack[(rp-4)&0x1f], a);
 			io_exit();
 			exit(0);
 		case 0x1f:

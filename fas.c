@@ -46,43 +46,49 @@ uint8_t getop(char *s) {
 	return 0xff;
 }
 
-unsigned char lbuf[1024] = {0};
+unsigned char lbuf[2048] = {0};
 uint16_t lbp = 0;
 
 void printref() {
 	unsigned char *s = lbuf;
 	while(s < lbuf+lbp) {
-		while(*s) {
+		while(*s && *s != '\n') {
 			printf("%c", *(s++));
 		}
 		s++;
 		printf("\t%d\n", *s);
+		s++;
 	}
 }
 
 void label() {
-	uint8_t lstart = lbp;
+	uint16_t lstart = lbp;
 	for(char *s = cbuf+2; *s && *s ^ '\n'; s++) {
 		lbuf[lbp++] = *s;
 	}
 	lbuf[lbp++] = '\0';
-	lbuf[lbp++] = ip;
-	printf("label %s at %d\n", lbuf+lstart, line);
+	lbuf[lbp++] = ip&0xff;
+	lbuf[lbp++] = ip >> 8;
+	printf("label %s at %d:%d\n", lbuf+lstart, line, ip);
 }
 
 uint32_t getref(char *t) {
-printref();
+//printref();
 	char *s = t;
 	unsigned char *ls = lbuf;
+	uint16_t res = 0;
 	while(ls < lbuf+lbp) {
 		for(s = t; *s && *s ^ '\n' && *s == *ls; s++, ls++); //compare as far as possible
 		if(!*ls  && (!*s || *s == '\n')) { 
 			ls++;
-			printf("ref %d at %d\n", *ls , line);
-			return *ls;
+//			printf("ref %d at %d\n", *ls , line);
+			res += *(ls++);
+			res += (*ls) << 8;
+			return res;
 		}
 		while(*(ls++)); //skip to end of word
 		ls++; //skip reference
+		ls++;
 	}
 }
 
@@ -101,7 +107,7 @@ void inst() {
 		i++;
 		addr = getref(s);
 		if(addr != (addr << (i*5)) >> (i*5)) {
-			printf("E%d: too long jump: %s\n", line, s);
+			printf("E%d: too long jump: %s:%d\n", line, s, addr);
 			exit(1);
 		}
 		word += addr <<(i*5);
@@ -128,29 +134,48 @@ void hex() {
 	fwrite(&word, 4, 1, of);
 }
 
+uint16_t getskip() {
+	uint16_t num = 0;
+	char *s = cbuf+2;
+	for(; *s && *s ^ '\n'; s++) {
+		if(*s < '0' || *s > '9') err("skip");
+		num *= 10;
+		num += *s-'0';
+	}
+	return num;
+}
+
 void dec() {
 	word = 0;
-	for(char *s = cbuf+2; *s && *s ^ '\n'; s++) {
+	int8_t mult = 1;
+	char *s = cbuf+2;
+	if (cbuf[2] == '-') {
+		mult = -1;
+		s++;
+	}
+	for(; *s && *s ^ '\n'; s++) {
 		if(*s < '0' || *s > '9') err("dec");
 		word *= 10;
 		word += *s-'0';
 	}
+	word *= mult;
 	fwrite(&word, 4, 1, of);
 }
-
-
 
 void ref() {
 	word = getref(cbuf+2);
 	fwrite(&word, 4, 1, of);
-	printf("ref %d at %d\n", word, line);
+//	printf("ref %d at %d\n", word, line);
 	return;
 }
 
 void labelize() {
 	while(fill()) {
-printf("labelc: %c\n", cbuf[0]);
+//printf("labelc: %c\n", cbuf[0]);
 		switch(cbuf[0]) {
+		case '+':
+			ip += getskip()-1;
+			break;
 		case ':':
 			label();
 		case ']':
@@ -236,6 +261,21 @@ void str() {
 	}
 }
 
+void skip() {
+	word = 0;
+	uint16_t num = 0;
+	char *s = cbuf+2;
+	for(; *s && *s ^ '\n'; s++) {
+		if(*s < '0' || *s > '9') err("skip");
+		num *= 10;
+		num += *s-'0';
+	}
+	while(num) {
+		fwrite(&word, 4, 1, of);
+		num--;
+	}
+}
+	
 int main(int argc, char **argv) {
 	if(argc < 2) usage();
 	inf = fopen(argv[1], "r");
@@ -245,7 +285,7 @@ int main(int argc, char **argv) {
 	ip = 0;
 	of = fopen("block.img", "wb");
 	while(fill()) {
-printf("mainc: %c\n", cbuf[0]);
+//printf("mainc: %c\n", cbuf[0]);
 		switch(cbuf[0]) {
 		case 'i':
 			inst();
@@ -264,6 +304,9 @@ printf("mainc: %c\n", cbuf[0]);
 			break;
 		case 'r':
 			ref();
+			break;
+		case '+':
+			skip();
 			break;
 		case ':':
 		case ']':
