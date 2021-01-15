@@ -302,29 +302,9 @@ r .logic
 i ;;
 
 : main
-i ca word
-i ca ok?
-i ca find
-i ca itoa
-i ca pstring
-i ca word
-i ca ok?
-i ca atoi
-i ca word
-i ca ok?
-i ca atoi
-i ++ca itoa
-i ca pstring
-i @pca wrotate
-c abcd
-i ca pword
-i @pca itoa
-d 85
-i ca pstring
-i ca nl
-i @pca pstring
-r tstring
-i ca ok
+i @p@pca interp
+d 7
+d 3
 i xx
 
 : eqstr
@@ -340,106 +320,62 @@ c rld!
 c \n
 
 : forths
-r fthend
-r dfind
+r forth
 
++ 138
 : forth
-: dcolon
 d 0
 c -:
-d 0
 r colon
-
-: dpstring
 d 0
 c pstr
-r dcolon
 r pstring
-
-: dword
 d 0
 c word
-r dpstring
 r word
-
-: datoi
 d 0
 c atoi
-r dword
 r atoi
-
-: ditoa
 d 0
 c itoa
-r datoi
 r itoa
-
-: dcompop
 d 0
 c o,
-r ditoa
 r compop
-
-: dcomma
 d 0
 c ,
-r dcompop
 r comma
-
-: dcomp
 d 0
 c -]
-r dcomma
 r comp
-
-: dforthctxt
 d 1
 c fort
 c h
-r dcomp
 r forthctxt
-
-: dmacroctxt
 d 1
 c macr
 c o
-r dforthctxt
 r macroctxt
-
-: dfind
 d 0
 c find
-r dmacroctxt
 r find
-
 : fthend
-+ 138
 
 : macros
-r mcrend
-r dpostpone
+r macro
 
++ 161
 : macro
-: dinterp
 d 0
 c [
-d 0
 r interp
-
-: dcret
 d 0
 c -;
-r dinterp
 r cret
-
-: dpostpone
 d 0
 c ,m
-r dcret
 r postpone
-
 : mcrend
-+ 161
 
 : here
 r end
@@ -461,43 +397,43 @@ i a!@+;;
 i ca head
 i dr@@;;
 
-: sumlen
-i dua!@@dupu++
-i @p++po;;
-d 2
 
 : streq
-i ovovpupu
-i ca sumlen
-i @p++
+i ovova!@@@p++
 d 1
-i a!popoaapu
+i puca b!
+
 : .streqlp
-i pua!@+poaa
-i pua!@+orifdr
+i @+ca @b+
+i orifpodr
 r .streq
-i podrpoduor;;
+i duor;;
 : .streq
-i drpoaanxdrdu
+i drnx
 r .streqlp
-i or--;;
+i duduor--;;
+
 
 : find
-i ca link
+i a!@+dr@@
+
 : .findlp
-i ca dbg
 i ca streq
-i ca dbg
-i ifdr@p++pudr
+i ifdrdraa@p++
 r .find
 d 1
-i poa!@@;;
+i a!@@;;
+
 : .find
-i dra!@@if
+i drdua!@@@p++
+d 2
+i ++a!@@if
 r .find;;
 i ju .findlp
+
 : .find;;
-i pudrpo;;
+i ;;
+
 
 : b!
 i @pdr!p;;
@@ -532,6 +468,7 @@ i ca b
 i ca ctxt
 i a!!!
 i ca link
+i @pa!!+
 i ca comma
 i poca ctxt
 i @p++a!!!;;
@@ -562,6 +499,16 @@ r commit
 ] implement commit
 i ju !opcnt
 
+: flushcomp
+i ca opbuf
+i ifdupuca comma
+r .flushcomp;;
+i poduordu
+i ca !opcnt
+i ju !opbuf
+: .flushcomp;;
+i dr;;
+
 : compop
 i ca opcnt
 i ifpu
@@ -580,9 +527,35 @@ r ctxt
 i @@a!!+aapoa!
 i !!;;
 
-: comp
-] rewrite find so that it can take a dictionary, enabling this
+: execute
+i pu;;
 
+: compword
+i ca flushcomp
+i @pca compop
+x 3
+i ca compop
+i ju flushcomp
+
+: comp
+i podrca word
+i @pca find
+r macros
+i ifpudrpo
+r .comp
+i ca execute
+i ju comp
+: .comp
+i dr@pca find
+r forths
+i ifpudrpo
+i ca compword
+r .comp-abort
+i ju comp
+: .comp-abort
+i drdr@pca pword
+c wrd?
+i ju comp
 
 : forthctxt
 i @pju !ctxt
@@ -593,11 +566,32 @@ i @pju !ctxt
 r macros
 
 : interp
+i podrca word
+i ca ok?
+i @pca find
+r forths
+i ifpudrpo
+r .interp-abort
+i ca execute
+i ju interp
+: .interp-abort
+i drdr@pca pword
+c wrd?
+i ju interp
 
 : cret
 i @pju compop
 x 1c
 
 : postpone
+i ca word
+i @pca find
+r macros
+i pudrpo
+i ifju compword
+r .postpone
+: .postpone
+i @pju pword
+c wrd?
 
 : end
