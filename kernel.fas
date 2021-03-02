@@ -251,9 +251,7 @@ i drdrpo--@pdu
 r wpad
 i pu--++po@p++
 d -1
-i a!!!aa
-i ju dbg
-i ;;
+i a!!!aa;;
 
 : atoi+
 i ca rswap
@@ -302,12 +300,12 @@ r .logic
 i ;;
 
 : main
-i ca word
-i ca ok?
-i @pca find
-d 0
-i ca itoa
-i ca pstring
+i @p@p@p@p
+d 1
+d 2
+d 7
+d 8
+i ca interp
 i xx
 
 : eqstr
@@ -325,7 +323,7 @@ c \n
 : forths
 
 + 138
-: forth
+: rforth
 d 0
 c -:
 r colon
@@ -366,7 +364,7 @@ r find
 : macros
 
 + 161
-: macro
+: rmacro
 d 0
 c [
 r interp
@@ -386,8 +384,8 @@ r forths
 r macros
 r fthend
 r mcrend
-r forth
-r macro
+r rforth
+r rmacro
 
 : slot
 d 0
@@ -416,15 +414,25 @@ i drnx
 r .streqlp
 i duduor--;;
 
+: head
+i @p@p++++;;
+r dict
+d 4
+
+: @head
+i aapuca head
+i a!@@poa!;;
+
+: !head
+i aapuca head
+i a!!!poa!;;
+
 
 ] find: turn dictionary offset into string, compare string, if equal,
 ] get value, if not, add 1 and repeat.
 
 : find
-i dupu@p@p++++
-r dict
-d 4
-i a!@@
+i dupuca @head
 
 : .findlp
 i ca streq
@@ -433,7 +441,6 @@ r .find
 i a!@@;;
 : .find
 i dra!@+draa
-i ca dbg
 i du@p@ppodupu
 r dict
 d 2
@@ -471,15 +478,19 @@ r .strcpy
 
 : colon
 i ca word
-i dupuca strcpy
-i ca b
+i @pa!@@
+r here
 i ca ctxt
-i a!!!
-i @pa!!+
-i ca comma
-i poca ctxt
-i @p++a!!!;;
+i ca @head
+i @p++a!
+d -1
+i !!aapudua!@@
+i @p++
 d 1
+i --po++dupu
+i ca strcpy
+i poca ctxt
+i ju !head
 
 : !opbuf
 i @pdr!p;;
@@ -573,17 +584,22 @@ i @pju !ctxt
 r macros
 
 : interp
-i podrca word
-i ca ok?
+i ca word
 i @pca find
-r forths
+d 0
 i ifpudrpo
-r .interp-abort
+r .interp-num
 i ca execute
+i ca ok?
+i ju interp
+: .interp-num
+i drca atoi
+i ca ok?
 i ju interp
 : .interp-abort
 i drdr@pca pword
 c wrd?
+i ca nl
 i ju interp
 
 : cret
