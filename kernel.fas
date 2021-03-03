@@ -300,11 +300,6 @@ r .logic
 i ;;
 
 : main
-i @p@p@p@p
-d 1
-d 2
-d 7
-d 8
 i ca interp
 i xx
 
@@ -324,6 +319,79 @@ c \n
 
 + 138
 : rforth
+d 0
+c @+
+r i@+
+d 0
+c @
+r i@
+d 0
+c !+
+r i!+
+d 0
+c !
+r i!
+d 0
+c in
+r iin
+d 0
+c out
+r iout
+d 0
+c *
+r i*
+d 0
+c 2*
+r i2*
+d 0
+c 2/
+r i2/
+d 0
+c drop
+r idr
+d 0
+c dup
+r idu
+d 0
+c >r
+r i>r
+d 0
+c r>
+r ir>
+d 0
+c over
+r iov
+d 0
+c a
+r ia
+d 0
+c bye
+r ixx
+d 0
+c a!
+r ia!
+d 0
+c -
+r i-
+d 0
+c and
+r i&
+d 0
+c or
+r i^
+d 0
+c +
+r i+
+d 0
+c @.
+r see
+d 1
+c wfin
+c d
+r wfind
+d 0
+c dbg
+r dbg
 d 0
 c -:
 r colon
@@ -361,10 +429,88 @@ c find
 r find
 : fthend
 
+: wfind
+i ca word
+i ovdupuororpo
+i ju find
+
 : macros
 
 + 161
 : rmacro
+d 0
+c ex
+r cex
+d 1
+c unex
+c t
+r cunx
+d 0
+c next
+r cnx
+d 0
+c @+
+r c@+
+d 0
+c @
+r c@
+d 0
+c !+
+r c!+
+d 0
+c !
+r c!
+d 0
+c in
+r cin
+d 0
+c out
+r cout
+d 0
+c *
+r c*
+d 0
+c 2*
+r c2*
+d 0
+c 2/
+r c2/
+d 0
+c drop
+r cdr
+d 0
+c dup
+r cdu
+d 0
+c >r
+r c>r
+d 0
+c r>
+r cr>
+d 0
+c over
+r cov
+d 0
+c a
+r ca
+d 0
+c bye
+r cxx
+d 0
+c a!
+r ca!
+d 0
+c -
+r c-
+d 0
+c and
+r c&
+d 0
+c or
+r c^
+d 0
+c +
+r c+
 d 0
 c [
 r interp
@@ -386,9 +532,6 @@ r fthend
 r mcrend
 r rforth
 r rmacro
-
-: slot
-d 0
 
 : !ctxt
 i @pdr!p;;
@@ -492,88 +635,43 @@ i ca strcpy
 i poca ctxt
 i ju !head
 
-: !opbuf
-i @pdr!p;;
-: opbuf
-i @p;;
-d 0
-
-: opbuf+
-i ca opbuf
-i ++ju !opbuf
-
-: !opcnt
-i @pdr!p;;
-: opcnt
-i @p;;
-d 0
-
-: opcnt+
-i ca opcnt
-i @p++@porif
-d 1
-d 5
-r commit
-] implement commit
-i ju !opcnt
-
-: flushcomp
-i ca opbuf
-i ifdupuca comma
-r .flushcomp;;
-i poduordu
-i ca !opcnt
-i ju !opbuf
-: .flushcomp;;
-i dr;;
-
-: compop
-i ca opcnt
-i ifpu
-: .compoplp
-r .compop
-i 2*2*2*2*2*po
-i @p++ju .compoplp
-d -1
-: .compop
-i ca opbuf+
-i ju opcnt+
-
 : comma
-i @pa!@@dupua!
-r ctxt
-i @@a!!+aapoa!
-i !!;;
+i @pdupua!@@a!
+r here
+i !+aapoa!!!;;
 
 : execute
 i pu;;
 
 : compword
-i ca flushcomp
+i ca opflush
 i @pca compop
 x 3
 i ca compop
-i ju flushcomp
+i ju opflush
 
 : comp
 i podrca word
 i @pca find
-r macros
+d 1
 i ifpudrpo
 r .comp
 i ca execute
-i ju comp
+i ca comp
 : .comp
 i dr@pca find
-r forths
+d 0
 i ifpudrpo
+r .comp-num
 i ca compword
-r .comp-abort
-i ju comp
-: .comp-abort
-i drdr@pca pword
-c wrd?
-i ju comp
+i ca comp
+
+: .comp-num
+i drca atoi
+i @pca compop
+x 08
+i ca comma
+i ca comp
 
 : forthctxt
 i @pju !ctxt
@@ -584,37 +682,271 @@ i @pju !ctxt
 r macros
 
 : interp
-i ca word
+i podrca word
 i @pca find
 d 0
 i ifpudrpo
 r .interp-num
 i ca execute
 i ca ok?
-i ju interp
+i ca interp
 : .interp-num
 i drca atoi
 i ca ok?
-i ju interp
+i ca interp
 : .interp-abort
 i drdr@pca pword
 c wrd?
 i ca nl
-i ju interp
+i ca interp
+
+: current
+r end
+
+: buffer
+d 0
+
+: slot
+d 0
+
+: neg
+i --@p++;;
+d 1
+
+: slotix
+i du2*2*++;;
+
+: ophere?
+i if;;
+r .ophere?
+: .ophere?
+i @pa!@@du@p++
+r here
+d 1
+i pu@pa!!!@pa!
+r current
+r here
+i po!!;;
+
+: compop
+i @pa!@@
+r slot
+i ca ophere?
+i ca slotix
+i if@p++pu
+r .compop
+d -1
+i 2*undu
+: .compop
+i dr@pa!@@++
+r buffer
+i !!
+: ju opflush?
+
+: opflush?
+i @pa!@@@p++du
+r slot
+d 1
+i @porifdr!!;;
+d 6
+r .flush
+: .flush
+i drdrju opflush
+
+: commit
+i @pa!@@a!!!;;
+r current
+
+: opflush
+i @pa!@@ifdr
+r buffer
+r .opflush;;
+i @pdudua!or!!
+r slot
+i @pdudua!or@@
+r buffer
+i pu!!po
+i ju commit
+: .opflush;;
+i dr;;
 
 : cret
-i @pju compop
+i @pca compop
 x 1c
+i ju opflush
 
 : postpone
 i ca word
 i @pca find
-r macros
+d 1
 i pudrpo
 i ifju compword
 r .postpone
 : .postpone
 i @pju pword
 c wrd?
+
+: see
+i a!@@ca itoa
+i ju pstring
+
+: i+
+i ++;;
+
+: i-
+i --;;
+
+: i&
+i an;;
+
+: i^
+i or;;
+
+: i@+
+i @+;;
+
+: i@
+i @@;;
+
+: i!+
+i !+;;
+
+: i!
+i !!;;
+
+: iin
+i in;;
+
+: iout
+i ot;;
+
+: i*
+i **;;
+
+: i2*
+i 2*;;
+
+: i2/
+i 2/;;
+
+: idr
+i dr;;
+
+: idu
+i du;;
+
+: ir>
+i po;;
+
+: iov
+i ov;;
+
+: i>r
+i pu;;
+
+: ia
+i aa;;
+
+: ixx
+i xx
+
+: ia!
+i a!;;
+
+: c+
+i @pju compop
+x 14
+
+: c-
+i @pju compop
+x 13
+
+: c&
+i @pju compop
+x 15
+
+: c^
+i @pju compop
+x 16
+
+: cex
+i @pju compop
+x 1
+
+: cunx
+i @pju compop
+x 4
+
+: cnx
+i @pju compop
+x 5
+
+: c@+
+i @pju compop
+x 9
+
+: c@
+i @pju compop
+x a
+
+: c!+
+i @pju compop
+x c
+
+: c!
+i @pju compop
+x d
+
+: cin
+i @pju compop
+x e
+
+: cout
+i @pju compop
+x f
+
+: c*
+i @pju compop
+x 10
+
+: c2*
+i @pju compop
+x 11
+
+: c2/
+i @pju compop
+x 12
+
+: cdr
+i @pju compop
+x 17
+
+: cdu
+i @pju compop
+x 18
+
+: cr>
+i @pju compop
+x 19
+
+: cov
+i @pju compop
+x 1a
+
+: ca
+i @pju compop
+x 1b
+
+: c>r
+i @pju compop
+x 1d
+
+: cxx
+i @pju compop
+x 1e
+
+: ca!
+i @pju compop
+x 1f
 
 : end
