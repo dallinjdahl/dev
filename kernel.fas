@@ -135,20 +135,10 @@ i @p@pa!ot;;
 c \n
 d 0
 
-: echo
-i @ppu@pa!
-d 10
-d 0
-i inotun;;
-
 : dbg
 i aapu@pa!indr
 d 3
 i poa!;;
-
-: peek
-i duca itoa
-i ju pstring
 
 d 0
 : wpad
@@ -293,234 +283,14 @@ i drpopodr;;
 : .atoi;;nx
 i drpo;;
 
-: logic
-i ifduor--;;
-r .logic
-: .logic
-i ;;
-
 : main
 i ca interp
 i xx
-
-: eqstr
-d 1
-c hell
-c o
-
-: tstring
-d 3
-c hell
-c o\swo
-c rld!
-c \n
-
-: forths
-
-+ 138
-: rforth
-d 0
-c @+
-r i@+
-d 0
-c @
-r i@
-d 0
-c !+
-r i!+
-d 0
-c !
-r i!
-d 0
-c in
-r iin
-d 0
-c out
-r iout
-d 0
-c *
-r i*
-d 0
-c 2*
-r i2*
-d 0
-c 2/
-r i2/
-d 0
-c drop
-r idr
-d 0
-c dup
-r idu
-d 0
-c >r
-r i>r
-d 0
-c r>
-r ir>
-d 0
-c over
-r iov
-d 0
-c a
-r ia
-d 0
-c bye
-r ixx
-d 0
-c a!
-r ia!
-d 0
-c -
-r i-
-d 0
-c and
-r i&
-d 0
-c or
-r i^
-d 0
-c +
-r i+
-d 0
-c @.
-r see
-d 1
-c wfin
-c d
-r wfind
-d 0
-c dbg
-r dbg
-d 0
-c -:
-r colon
-d 0
-c pstr
-r pstring
-d 0
-c word
-r word
-d 0
-c atoi
-r atoi
-d 0
-c itoa
-r itoa
-d 0
-c o,
-r compop
-d 0
-c ,
-r comma
-d 0
-c -]
-r comp
-d 1
-c fort
-c h
-r forthctxt
-d 1
-c macr
-c o
-r macroctxt
-d 0
-c find
-r find
-: fthend
 
 : wfind
 i ca word
 i ovdupuororpo
 i ju find
-
-: macros
-
-+ 161
-: rmacro
-d 0
-c ex
-r cex
-d 1
-c unex
-c t
-r cunx
-d 0
-c next
-r cnx
-d 0
-c @+
-r c@+
-d 0
-c @
-r c@
-d 0
-c !+
-r c!+
-d 0
-c !
-r c!
-d 0
-c in
-r cin
-d 0
-c out
-r cout
-d 0
-c *
-r c*
-d 0
-c 2*
-r c2*
-d 0
-c 2/
-r c2/
-d 0
-c drop
-r cdr
-d 0
-c dup
-r cdu
-d 0
-c >r
-r c>r
-d 0
-c r>
-r cr>
-d 0
-c over
-r cov
-d 0
-c a
-r ca
-d 0
-c bye
-r cxx
-d 0
-c a!
-r ca!
-d 0
-c -
-r c-
-d 0
-c and
-r c&
-d 0
-c or
-r c^
-d 0
-c +
-r c+
-d 0
-c [
-r interp
-d 0
-c -;
-r cret
-d 0
-c ,m
-r postpone
-: mcrend
 
 : here
 r end
@@ -570,9 +340,6 @@ i a!@@poa!;;
 i aapuca head
 i a!!!poa!;;
 
-
-] find: turn dictionary offset into string, compare string, if equal,
-] get value, if not, add 1 and repeat.
 
 : find
 i dupuca @head
@@ -675,11 +442,11 @@ i ca comp
 
 : forthctxt
 i @pju !ctxt
-r forths
+d 0
 
 : macroctxt
 i @pju !ctxt
-r macros
+d 1
 
 : interp
 i podrca word
@@ -709,10 +476,6 @@ d 0
 : slot
 d 0
 
-: neg
-i --@p++;;
-d 1
-
 : slotix
 i du2*2*++;;
 
@@ -738,9 +501,8 @@ r .compop
 d -1
 i 2*undu
 : .compop
-i dr@pa!@@++
+i dr@pa!@@++!!
 r buffer
-i !!
 : ju opflush?
 
 : opflush?
@@ -780,6 +542,7 @@ i ca word
 i @pca find
 d 1
 i pudrpo
+i ca dbg
 i ifju compword
 r .postpone
 : .postpone
@@ -948,5 +711,207 @@ x 1e
 : ca!
 i @pju compop
 x 1f
+
+: forths
+
++ 138
+: rforth
+d 0
+c @+
+r i@+
+d 0
+c @
+r i@
+d 0
+c !+
+r i!+
+d 0
+c !
+r i!
+d 0
+c in
+r iin
+d 0
+c out
+r iout
+d 0
+c *
+r i*
+d 0
+c 2*
+r i2*
+d 0
+c 2/
+r i2/
+d 0
+c drop
+r idr
+d 0
+c dup
+r idu
+d 0
+c >r
+r i>r
+d 0
+c r>
+r ir>
+d 0
+c over
+r iov
+d 0
+c a
+r ia
+d 0
+c bye
+r ixx
+d 0
+c a!
+r ia!
+d 0
+c -
+r i-
+d 0
+c and
+r i&
+d 0
+c or
+r i^
+d 0
+c +
+r i+
+d 0
+c @.
+r see
+d 1
+c wfin
+c d
+r wfind
+d 0
+c dbg
+r dbg
+d 0
+c -:
+r colon
+d 0
+c pstr
+r pstring
+d 0
+c word
+r word
+d 0
+c atoi
+r atoi
+d 0
+c itoa
+r itoa
+d 0
+c o,
+r compop
+d 0
+c ,
+r comma
+d 0
+c -]
+r comp
+d 1
+c fort
+c h
+r forthctxt
+d 1
+c macr
+c o
+r macroctxt
+d 0
+c find
+r find
+: fthend
+
+: macros
+
++ 161
+: rmacro
+d 0
+c ex
+r cex
+d 1
+c unex
+c t
+r cunx
+d 0
+c next
+r cnx
+d 0
+c @+
+r c@+
+d 0
+c @
+r c@
+d 0
+c !+
+r c!+
+d 0
+c !
+r c!
+d 0
+c in
+r cin
+d 0
+c out
+r cout
+d 0
+c *
+r c*
+d 0
+c 2*
+r c2*
+d 0
+c 2/
+r c2/
+d 0
+c drop
+r cdr
+d 0
+c dup
+r cdu
+d 0
+c >r
+r c>r
+d 0
+c r>
+r cr>
+d 0
+c over
+r cov
+d 0
+c a
+r ca
+d 0
+c bye
+r cxx
+d 0
+c a!
+r ca!
+d 0
+c -
+r c-
+d 0
+c and
+r c&
+d 0
+c or
+r c^
+d 0
+c +
+r c+
+d 0
+c [
+r interp
+d 0
+c -;
+r cret
+d 0
+c ,m
+r postpone
+: mcrend
 
 : end
