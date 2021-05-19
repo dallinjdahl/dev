@@ -1,9 +1,19 @@
-00	..	08	@p	10	**	18	du
-01	ex	09	@+	11	2*	19	po
-02	ju	0a	@@	12	2/	1a	ov
-03	ca	0b	!p	13	--	1b	aa
-04	un	0c	!+	14	++	1c	;;
-05	nx	0d	!!	15	an	1d	pu
-06	if	0e	in	16	or	1e	xx
-07	-i	0f	ot	17	dr	1f	a!
+ooooo ooooo ooooo ooooo ooooo ooooo r d
 
+00 nop		08 @p		10 *	18 drop
+01 exch		09 r+		11 /	19 dup
+02 jump		0a !p		12 2*	1a swap
+03 call		0b -r		13 2/	1b over
+04 unext	0c r		14 inv	1c pop
+05 next		0d rxch		15 +	1d push
+06 if		0e in		16 and	1e ;;
+07 -if		0f out		17 or	1f exit
+
+00	..	08	@p	10	**	18	dr
+01	ex	09	r+	11	//	19	du
+02	ju	0a	!p	12	2*	1a	sw
+03	ca	0b	-r	13	2/	1b	ov
+04	un	0c	rr	14	--	1c	po
+05	nx	0d	rx	15	++	1d	pu
+06	if	0e	in	16	an	1e	;;
+07	-i	0f	ot	17	or	1f	xx
