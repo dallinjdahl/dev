@@ -31,7 +31,7 @@ dev is designed to run on a portable virtual machine, allowing for either native
 | 13	 | --		| (invert) bitwise invert TOS |
 | 14	 | ++		| add top 2 items on the stack and push the result |
 | 15	 | an		| (and) push the bitwise and of the top 2 items of the stack |
-| 16	 | or		| push the bitwise or of the top 2 items of the stack |
+| 16	 | or		| push the bitwise exclusive-or of the top 2 items of the stack |
 | 17	 | dr		| drop the TOS |
 | 18	 | du		| duplicate the TOS |
 | 19	 | po		| pop TORS to TOS |
